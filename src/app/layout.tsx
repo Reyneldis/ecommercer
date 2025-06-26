@@ -8,6 +8,7 @@ import NextTopLoader from 'nextjs-toploader';
 import Footer from '@/components/shared/footer/Footer';
 import { ThemeProvider } from 'next-themes';
 import { ClerkProvider } from '@clerk/nextjs';
+import AnimatedBackground from '@/components/shared/AnimatedBackground';
 
 const onest = Onest({ subsets: ['latin'] });
 
@@ -24,13 +25,16 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="es" suppressHydrationWarning>
-        <body className={onest.className}>
+        <body
+          className={`${onest.className} min-h-screen relative bg-transparent`}
+        >
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
+            <AnimatedBackground />
             <NextTopLoader
               color="#2563eb"
               initialPosition={0.08}
@@ -43,7 +47,9 @@ export default function RootLayout({
               shadow="0 0 10px #2563eb,0 0 5px #2563eb"
             />
             <Navbar />
-            <main className="min-h-screen">{children}</main>
+            <main className="relative z-10 min-h-screen bg-transparent">
+              {children}
+            </main>
             <Toaster />
             <Footer />
           </ThemeProvider>

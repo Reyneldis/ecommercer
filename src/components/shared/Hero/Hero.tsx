@@ -9,7 +9,6 @@ export default async function Hero() {
   return (
     <section className="relative py-24 overflow-hidden">
       {/* Fondo con gradiente y elementos decorativos */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-secondary/5"></div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-6xl mx-auto">
