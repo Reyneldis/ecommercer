@@ -15,20 +15,18 @@ export default function ProductsPage() {
   const search = searchParams.get('search');
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    (async () => {
       try {
-        setLoading(true);
-        const response = await fetch('/api/products');
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
+        const res = await fetch('/api/products');
+        if (!res.ok) throw new Error('Error en la respuesta');
+        const json = await res.json();
+        setProducts(json.data);
+      } catch (error: any) {
         console.error('Error fetching productos:', error);
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchProducts();
+    })();
   }, []);
 
   const filteredProducts = products.filter(product => {
