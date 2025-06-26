@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { getHomeInfo } from '@/lib/get-home';
@@ -15,6 +14,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { SignInButton, useAuth } from '@clerk/nextjs';
+import Image from 'next/image';
 
 export default function Hero() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -209,10 +209,13 @@ export default function Hero() {
                 {/* Contenedor principal */}
                 <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl shadow-primary/20 bg-gradient-to-br from-primary/10 to-secondary/10 p-1">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-secondary/20 rounded-3xl"></div>
-                  <img
+                  <Image
                     src={homeData.image}
-                    alt="Hero image"
+                    alt={homeData.title}
+                    width={400}
+                    height={300}
                     className="relative z-10 object-cover w-full h-full rounded-2xl transform group-hover:scale-105 transition-all duration-700"
+                    priority
                   />
 
                   {/* Efectos de overlay */}

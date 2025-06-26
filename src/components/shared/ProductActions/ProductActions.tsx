@@ -5,12 +5,17 @@ import { ShoppingBag } from 'lucide-react';
 import type { Product } from '@/types';
 import { useRouter } from 'next/navigation';
 import { SignInButton, useAuth } from '@clerk/nextjs';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ProductActionsProps {
-  product: Product;
+  product?: Product;
+  loading?: boolean;
 }
 
-export function ProductActions({ product }: ProductActionsProps) {
+export function ProductActions({
+  product,
+  loading = false,
+}: ProductActionsProps) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
 
@@ -20,9 +25,19 @@ export function ProductActions({ product }: ProductActionsProps) {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6 mt-6">
+        <Skeleton className="h-14 w-full rounded-full" />
+        <Skeleton className="h-14 w-full rounded-full" />
+        <Skeleton className="h-8 w-32 rounded-full mx-auto" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-6 mt-6">
-      <AddToCartButton product={product} />
+      <AddToCartButton product={product!} />
       {isSignedIn ? (
         <button
           onClick={handleBuyNow}

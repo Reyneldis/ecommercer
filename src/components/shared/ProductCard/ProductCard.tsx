@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { ShoppingCart, Eye, Sparkles } from 'lucide-react';
@@ -6,6 +5,7 @@ import Link from 'next/link';
 import { Product } from '@/types';
 import { useCart } from '@/hooks/use-cart';
 import { SignInButton, useAuth } from '@clerk/nextjs';
+import Image from 'next/image';
 
 interface ProductCardProps {
   product: Product;
@@ -36,9 +36,11 @@ export default function ProductCard({ product }: ProductCardProps) {
           href={`/products/${product.slug}`}
           className="block w-full h-full"
         >
-          <img
+          <Image
             src={product.image}
             alt={product.productName}
+            width={400}
+            height={273}
             className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
             style={{
               background:
@@ -47,6 +49,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             onError={e => {
               e.currentTarget.style.objectFit = 'contain';
             }}
+            priority={false}
           />
           {/* Gradiente y sombra sutil */}
           <div className="absolute inset-0 bg-gradient-to-t from-background/30 via-transparent to-transparent"></div>

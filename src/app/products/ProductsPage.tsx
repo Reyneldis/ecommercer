@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import ProductCard from '@/components/shared/ProductCard/ProductCard';
 import Categories from '@/components/shared/categories';
 import { Product } from '@/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -67,16 +68,10 @@ export default function ProductsPage() {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(8)].map((_, index) => (
-                <div
+                <Skeleton
                   key={index}
-                  className="animate-pulse bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden shadow-sm"
-                >
-                  <div className="aspect-[4/5] bg-neutral-200 dark:bg-neutral-800" />
-                  <div className="p-4 space-y-3">
-                    <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded" />
-                    <div className="h-6 bg-neutral-200 dark:bg-neutral-800 rounded w-1/3" />
-                  </div>
-                </div>
+                  className="h-[420px] rounded-3xl w-full bg-white dark:bg-neutral-900 shadow-sm"
+                />
               ))}
             </div>
           ) : (

@@ -1,7 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
 import { getProduct } from '@/lib/get-product';
 import { ProductActions } from '@/components/shared/ProductActions/ProductActions';
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 
 interface ProductPageProps {
   params: Promise<{ produsctsSlug: string }>;
@@ -20,10 +20,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <div className="max-w-4xl w-full bg-white dark:bg-neutral-900 rounded-2xl shadow-lg p-8 flex flex-col md:flex-row gap-10">
         {/* Imagen */}
         <div className="flex-1 flex items-center justify-center">
-          <img
+          <Image
             src={product.image}
             alt={product.productName}
+            width={320}
+            height={384}
             className="w-80 h-96 object-cover rounded-xl shadow-md"
+            priority={false}
           />
         </div>
         {/* Info */}

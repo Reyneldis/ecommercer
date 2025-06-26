@@ -5,6 +5,7 @@ import { useCart } from '@/hooks/use-cart';
 import { X, Trash2, ShoppingBag, Plus, Minus } from 'lucide-react';
 import Link from 'next/link';
 import { SignInButton, useAuth } from '@clerk/nextjs';
+import Image from 'next/image';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -79,9 +80,11 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
                   className="flex gap-3 p-3 bg-muted/20 rounded-lg"
                 >
                   <div className="relative w-16 h-16 rounded-md overflow-hidden bg-muted">
-                    <img
+                    <Image
                       src={item.image}
                       alt={item.productName}
+                      width={64}
+                      height={64}
                       className="w-full h-full object-cover"
                     />
                   </div>
