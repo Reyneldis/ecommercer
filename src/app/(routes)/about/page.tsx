@@ -1,47 +1,86 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { Sparkles, Users, Star, Shield, Heart, ArrowRight } from 'lucide-react';
 
 export default function AboutPage() {
   return (
-    <main className="container mx-auto px-4 py-12 max-w-3xl">
-      {/* Imagen de portada */}
-      <div className="mb-8 flex justify-center">
-        <Image
-          src="/nn.jpg"
-          alt="Equipo"
-          width={320}
-          height={180}
-          className="rounded-xl shadow-lg"
-        />
+    <main className="relative min-h-screen py-24 overflow-hidden bg-background/80">
+      {/* Blobs decorativos premium */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div className="absolute top-10 left-1/4 w-40 h-40 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-10 right-1/4 w-32 h-32 bg-secondary/10 rounded-full blur-2xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-10 w-16 h-16 bg-primary/5 rounded-full blur-lg animate-pulse delay-2000"></div>
       </div>
-      <h1 className="text-3xl font-bold mb-6 text-center">Sobre nosotros</h1>
-      {/* Misión, visión y valores */}
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">Nuestra misión</h2>
-        <p className="mb-4">
-          Ofrecer productos de calidad para el hogar, el cuidado personal y la
-          tecnología, brindando una experiencia de compra sencilla, segura y
-          satisfactoria.
+
+      {/* Hero visual */}
+      <section className="relative z-10 flex flex-col items-center justify-center mb-16">
+        <div className="mb-8 relative w-full flex justify-center">
+          <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
+            <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-primary/80 to-secondary/80 text-primary-foreground text-base font-bold shadow-lg animate-fade-in">
+              <Sparkles className="h-5 w-5 animate-bounce" />
+              Nuestro equipo
+            </span>
+          </div>
+          <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-primary/20 bg-gradient-to-br from-primary/10 to-secondary/10">
+            <Image
+              src="/nn.jpg"
+              alt="Equipo"
+              width={420}
+              height={220}
+              className="w-[420px] h-[220px] object-cover object-center"
+              priority
+            />
+          </div>
+        </div>
+        <h1 className="text-5xl font-extrabold tracking-tight text-center bg-clip-text text-transparent bg-gradient-to-r from-foreground via-primary to-foreground animate-gradient mb-4">
+          Sobre nosotros
+        </h1>
+        <p className="text-xl text-muted-foreground max-w-2xl text-center mb-2">
+          Somos una tienda online premium dedicada a ofrecer productos de
+          calidad, innovación y atención personalizada.
         </p>
-        <h2 className="text-xl font-semibold mb-2">Nuestra visión</h2>
-        <p className="mb-4">
-          Ser la tienda online de referencia en innovación, variedad y servicio
-          al cliente en el mercado hispanohablante.
-        </p>
-        <h2 className="text-xl font-semibold mb-2">Nuestros valores</h2>
-        <ul className="list-disc list-inside mb-4">
-          <li>Calidad y confianza</li>
-          <li>Atención personalizada</li>
-          <li>Innovación constante</li>
-          <li>Compromiso con el cliente</li>
-        </ul>
       </section>
-      {/* Testimonios */}
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-6 text-center">Testimonios</h2>
-        <div className="grid gap-6 sm:grid-cols-2">
-          <div className="bg-neutral-100 dark:bg-neutral-800 rounded-xl shadow p-6 flex flex-col items-center text-center">
-            <p className="text-lg text-neutral-800 dark:text-neutral-100 font-medium mb-2">
+
+      {/* Misión, visión y valores en cards premium */}
+      <section className="mb-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="flex flex-col items-center bg-background/80 backdrop-blur-xl rounded-2xl shadow-xl border border-border/20 p-8 text-center transition-all duration-500 hover:scale-105 hover:shadow-2xl">
+          <Shield className="h-8 w-8 text-primary mb-3" />
+          <h2 className="text-2xl font-bold mb-2">Nuestra misión</h2>
+          <p className="text-base text-muted-foreground">
+            Ofrecer productos de calidad para el hogar, el cuidado personal y la
+            tecnología, brindando una experiencia de compra sencilla, segura y
+            satisfactoria.
+          </p>
+        </div>
+        <div className="flex flex-col items-center bg-background/80 backdrop-blur-xl rounded-2xl shadow-xl border border-border/20 p-8 text-center transition-all duration-500 hover:scale-105 hover:shadow-2xl">
+          <Star className="h-8 w-8 text-primary mb-3" />
+          <h2 className="text-2xl font-bold mb-2">Nuestra visión</h2>
+          <p className="text-base text-muted-foreground">
+            Ser la tienda online de referencia en innovación, variedad y
+            servicio al cliente en el mercado hispanohablante.
+          </p>
+        </div>
+        <div className="flex flex-col items-center bg-background/80 backdrop-blur-xl rounded-2xl shadow-xl border border-border/20 p-8 text-center transition-all duration-500 hover:scale-105 hover:shadow-2xl">
+          <Heart className="h-8 w-8 text-primary mb-3" />
+          <h2 className="text-2xl font-bold mb-2">Nuestros valores</h2>
+          <ul className="list-disc list-inside text-base text-muted-foreground text-left mx-auto max-w-xs">
+            <li>Calidad y confianza</li>
+            <li>Atención personalizada</li>
+            <li>Innovación constante</li>
+            <li>Compromiso con el cliente</li>
+          </ul>
+        </div>
+      </section>
+
+      {/* Testimonios premium */}
+      <section className="mb-16 max-w-4xl mx-auto">
+        <h2 className="text-3xl font-bold mb-8 text-center text-primary">
+          Testimonios
+        </h2>
+        <div className="grid gap-8 sm:grid-cols-2">
+          <div className="bg-background/80 backdrop-blur-xl rounded-2xl shadow-xl border border-border/20 p-8 flex flex-col items-center text-center transition-all duration-500 hover:scale-105 hover:shadow-2xl">
+            <Users className="h-7 w-7 text-primary mb-2" />
+            <p className="text-lg text-foreground font-medium mb-2">
               Excelente atención y productos de primera calidad. ¡Repetiré mi
               compra!
             </p>
@@ -49,8 +88,9 @@ export default function AboutPage() {
               Ana G.
             </span>
           </div>
-          <div className="bg-neutral-100 dark:bg-neutral-800 rounded-xl shadow p-6 flex flex-col items-center text-center">
-            <p className="text-lg text-neutral-800 dark:text-neutral-100 font-medium mb-2">
+          <div className="bg-background/80 backdrop-blur-xl rounded-2xl shadow-xl border border-border/20 p-8 flex flex-col items-center text-center transition-all duration-500 hover:scale-105 hover:shadow-2xl">
+            <Users className="h-7 w-7 text-primary mb-2" />
+            <p className="text-lg text-foreground font-medium mb-2">
               La entrega fue rápida y el empaque impecable. Muy recomendados.
             </p>
             <span className="text-sm font-semibold text-primary mt-2">
@@ -59,19 +99,23 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-      {/* Botón de contacto */}
-      <div className="mb-8 flex justify-center">
+
+      {/* Botón de contacto premium */}
+      <div className="mb-12 flex justify-center">
         <Link href="mailto:contacto@tutienda.com">
-          <button className="bg-primary text-primary-foreground px-6 py-2 rounded-full font-semibold shadow hover:bg-primary/80 transition">
+          <button className="group relative inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-primary to-secondary text-primary-foreground font-semibold text-lg shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none">
             Contáctanos
+            <ArrowRight className="h-5 w-5" />
+            <span className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/80 to-secondary/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
           </button>
         </Link>
       </div>
-      {/* Redes sociales */}
-      <div className="flex justify-center space-x-6">
+
+      {/* Redes sociales premium */}
+      <div className="flex justify-center space-x-8 mb-4">
         <Link href="https://facebook.com" target="_blank" aria-label="Facebook">
           <svg
-            className="w-6 h-6 text-muted-foreground hover:text-primary transition"
+            className="w-8 h-8 text-muted-foreground hover:text-primary transition-all duration-300 hover:scale-110"
             fill="currentColor"
             viewBox="0 0 24 24"
           >
@@ -84,7 +128,7 @@ export default function AboutPage() {
           aria-label="Instagram"
         >
           <svg
-            className="w-6 h-6 text-muted-foreground hover:text-primary transition"
+            className="w-8 h-8 text-muted-foreground hover:text-primary transition-all duration-300 hover:scale-110"
             fill="currentColor"
             viewBox="0 0 24 24"
           >
@@ -93,7 +137,7 @@ export default function AboutPage() {
         </Link>
         <Link href="https://twitter.com" target="_blank" aria-label="Twitter">
           <svg
-            className="w-6 h-6 text-muted-foreground hover:text-primary transition"
+            className="w-8 h-8 text-muted-foreground hover:text-primary transition-all duration-300 hover:scale-110"
             fill="currentColor"
             viewBox="0 0 24 24"
           >
