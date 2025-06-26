@@ -21,7 +21,7 @@ export default function ProductsPage() {
         if (!res.ok) throw new Error('Error en la respuesta');
         const json = await res.json();
         setProducts(json.data);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Error fetching productos:', error);
       } finally {
         setLoading(false);

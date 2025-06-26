@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useCart } from '@/hooks/use-cart';
@@ -32,7 +31,12 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cart-modal-title"
+    >
       {/* Overlay */}
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
@@ -45,7 +49,9 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
         <div className="flex items-center justify-between p-4 border-b">
           <div className="flex items-center gap-2">
             <ShoppingBag className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold">Carrito de Compras</h2>
+            <h2 id="cart-modal-title" className="text-lg font-semibold">
+              Carrito de Compras
+            </h2>
             {items.length > 0 && (
               <span className="bg-primary text-primary-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                 {items.length}
