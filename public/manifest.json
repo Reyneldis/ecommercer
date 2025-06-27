@@ -1,0 +1,51 @@
+{
+  "name": "Delivery Express - Tienda Online Premium",
+  "short_name": "Delivery Express",
+  "description": "Tu pedido, en minutos. Rápido, seguro y con atención premium.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/img/icons8-carro-rápido-pulsar-gradient-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/img/icons8-carro-rápido-pulsar-gradient-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["shopping", "food", "lifestyle"],
+  "lang": "es-ES",
+  "dir": "ltr",
+  "scope": "/",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "screenshots": [
+    {
+      "src": "/img/hero2.avif",
+      "sizes": "1280x720",
+      "type": "image/avif",
+      "form_factor": "wide"
+    }
+  ]
+}
