@@ -33,10 +33,10 @@ export default async function Categories() {
             <Sparkles className="h-5 w-5 animate-bounce" />
             Explora por categorías
           </div>
-          <h2 className="text-5xl font-extrabold tracking-tight mb-3 bg-clip-text text-transparent bg-gradient-to-r from-foreground via-primary to-foreground animate-gradient">
+          <h2 className="text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-foreground via-primary to-foreground animate-gradient">
             Nuestras Categorías
           </h2>
-          <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="mt-3 text-lg text-muted-foreground max-w-2xl mx-auto">
             Encuentra productos exclusivos y de alta calidad en cada categoría
           </p>
         </div>
