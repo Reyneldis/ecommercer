@@ -6,7 +6,7 @@ type RawCategory = {
   description?: string;
 };
 
-const { STRAPI_HOST } = process.env;
+const { NEXT_PUBLIC_BACKEND_URL } = process.env;
 export function getCategories() {
   return query(
     'categories?fields[0]=categoryName&fields[1]=slug&populate[mainImage][fields][0]=url',
@@ -17,7 +17,7 @@ export function getCategories() {
     }
     return categories.map((category: RawCategory) => {
       const { categoryName, slug, mainImage: rawImage } = category;
-      const image = `${STRAPI_HOST}${rawImage.url}`;
+      const image = `${NEXT_PUBLIC_BACKEND_URL}${rawImage.url}`;
       return { categoryName, slug, image };
     });
   });

@@ -1,6 +1,6 @@
 import { query } from './strapi';
 
-const { STRAPI_HOST } = process.env;
+const { NEXT_PUBLIC_BACKEND_URL } = process.env;
 
 interface Product {
   slug: string;
@@ -48,7 +48,7 @@ export function getProduct({
         images: rawImages,
         description,
       } = product;
-      const image = `${STRAPI_HOST}${rawImages[0].url}`;
+      const image = `${NEXT_PUBLIC_BACKEND_URL}${rawImages[0].url}`;
       return { image, productName, price, slug, description };
     });
     return { products, pagination: meta?.pagination };

@@ -1,10 +1,11 @@
-const { STRAPI_HOST, STRAPI_TOKEN } = process.env;
+const { NEXT_PUBLIC_BACKEND_URL, NEXT_PUBLIC_STRAPI_PUBLISHABLE_KEY } =
+  process.env;
 
 export async function query(url: string) {
   try {
-    const res = await fetch(`${STRAPI_HOST}/api/${url}`, {
+    const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/${url}`, {
       headers: {
-        Authorization: `Bearer ${STRAPI_TOKEN}`,
+        Authorization: `Bearer ${NEXT_PUBLIC_STRAPI_PUBLISHABLE_KEY}`,
       },
     });
     if (!res.ok) throw new Error('Error en la respuesta del servidor');
