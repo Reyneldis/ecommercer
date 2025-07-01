@@ -11,6 +11,10 @@ export function getCategories() {
   return query(
     'categories?fields[0]=categoryName&fields[1]=slug&populate[mainImage][fields][0]=url',
   ).then(res => {
+    if (!res) {
+      console.error('Respuesta nula o indefinida');
+      return [];
+    }
     const categories = res.data;
     if (!categories || !Array.isArray(categories)) {
       return [];
