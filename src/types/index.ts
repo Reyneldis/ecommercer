@@ -7,5 +7,4 @@ export interface Product {
   image: string;
   category: string;
   quantity?: number;
-  origin: string;
 }

@@ -1,18 +1,12 @@
-import { getCategories } from '@/lib/get-categories';
 import Link from 'next/link';
 import React from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
-
-type Category = {
-  categoryName: string;
-  slug: string;
-  image: string;
-};
+import { categories as categoriesData } from '@/lib/data';
 
 export default async function Categories() {
-  const categories = await getCategories();
+  const categories = categoriesData;
   const loading = !categories || categories.length === 0;
 
   if (categories.length === 0) return null;
@@ -47,7 +41,7 @@ export default async function Categories() {
             ? Array.from({ length: 3 }).map((_, i) => (
                 <Skeleton key={i} className="h-[320px] rounded-3xl w-full" />
               ))
-            : categories.map((category: Category, index) => (
+            : categories.map((category, index) => (
                 <Link
                   key={category.slug}
                   href={`/categories/${category.slug}`}
@@ -65,7 +59,7 @@ export default async function Categories() {
                     {/* Imagen protagonista mitad superior */}
                     <div className="relative w-full h-[65%] rounded-t-3xl overflow-hidden flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
                       <Image
-                        src={category.image}
+                        src={category.mainImage}
                         alt={category.categoryName}
                         width={400}
                         height={144}
@@ -80,7 +74,7 @@ export default async function Categories() {
                         {category.categoryName}
                       </h3>
                       <p className="text-sm text-muted-foreground group-hover:text-foreground/80 transition-colors duration-300 text-center">
-                        Explora productos exclusivos
+                        {category.description}
                       </p>
                       {/* CTA visual */}
                       <div className="flex justify-center mt-1">

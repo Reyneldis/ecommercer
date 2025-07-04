@@ -8,3 +8,14 @@ export interface ProducType {
   category: string;
   stock: number;
 }
+
+export interface ProductFull {
+  slug: string;
+  productName: string;
+  price: number;
+  images: string[];
+  description: string;
+  category: string;
+  features?: string[];
+  variants?: Array<Record<string, string | number>>;
+}

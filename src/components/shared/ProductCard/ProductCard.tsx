@@ -21,7 +21,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group relative bg-background/60 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl border border-border/20 transition-all duration-500 hover:scale-[1.025] flex flex-col h-[420px] min-h-[420px]">
+    <div className="group relative bg-background/20 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl border border-border/20 transition-all duration-500 hover:scale-[1.025] flex flex-col h-[420px] min-h-[420px]">
       {/* Badge de oferta o novedad */}
       <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-primary/80 to-secondary/80 text-primary-foreground text-xs font-bold shadow-lg animate-fade-in">
@@ -41,7 +41,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             alt={product.productName}
             width={400}
             height={273}
-            className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
+            className="w-full h-auto object-cover object-center transition-transform duration-700 group-hover:scale-110"
             style={{
               background:
                 'linear-gradient(135deg, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.08) 100%)',

@@ -1,14 +1,4 @@
-import { query } from './strapi';
-
-const { NEXT_PUBLIC_BACKEND_URL } = process.env;
-
-interface Product {
-  slug: string;
-  productName: string;
-  price: number;
-  images: Array<{ url: string }>;
-  description: string;
-}
+import { products as productsData } from './data';
 
 export function getProduct({
   categoryId,
@@ -21,36 +11,38 @@ export function getProduct({
   pageSize?: number;
   page?: string | number;
 }) {
-  let url = 'products?populate=images';
+  let filteredProducts = productsData;
 
-  // Si hay productId, buscar por slug específico
+  // Filtrar por slug específico
   if (productId) {
-    url = `products?filters[slug][$eq]=${productId}&populate=images`;
-  }
-  // Si hay categoryId, buscar por categoría
-  else if (categoryId) {
-    url = `products?filters[category][slug][$contains]=${categoryId}&populate=images`;
-  }
-
-  // Agregar paginación solo si no es búsqueda por ID específico
-  if (!productId) {
-    if (page) url += `&pagination[page]=${page}`;
-    if (pageSize) url += `&pagination[pageSize]=${pageSize}`;
+    filteredProducts = filteredProducts.filter(
+      product => product.slug === productId,
+    );
+  } else if (categoryId) {
+    // Si los productos tienen categoría, filtra por categoryId (slug de la categoría)
+    filteredProducts = filteredProducts.filter(
+      product => product.category === categoryId,
+    );
   }
 
-  return query(url).then(res => {
-    const { data, meta } = res;
-    const products = data.map((product: Product) => {
-      const {
-        slug,
-        productName,
-        price,
-        images: rawImages,
-        description,
-      } = product;
-      const image = `${NEXT_PUBLIC_BACKEND_URL}${rawImages[0].url}`;
-      return { image, productName, price, slug, description };
-    });
-    return { products, pagination: meta?.pagination };
+  // Paginación
+  let paginatedProducts = filteredProducts;
+  let pagination = undefined;
+  if (pageSize) {
+    const currentPage = Number(page) || 1;
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+    paginatedProducts = filteredProducts.slice(start, end);
+    pagination = {
+      page: currentPage,
+      pageSize,
+      pageCount: Math.ceil(filteredProducts.length / pageSize),
+      total: filteredProducts.length,
+    };
+  }
+
+  return Promise.resolve({
+    products: paginatedProducts,
+    pagination,
   });
 }

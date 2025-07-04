@@ -3,7 +3,6 @@ import { getProduct } from '@/lib/get-product';
 import Link from 'next/link';
 import React from 'react';
 import ProductCard from '@/components/shared/ProductCard/ProductCard';
-import type { Product } from '@/types';
 
 const PAGE_SIZE = 3;
 
@@ -36,20 +35,28 @@ export default async function CategoryPage({
     ? resolvedSearchParams.priceRange[0]
     : resolvedSearchParams.priceRange ?? '0';
 
-  const { products, pagination } = await getProduct({
-    categoryId,
-    page,
-    pageSize: PAGE_SIZE,
-  });
+  const { products: allProducts } = await getProduct({ categoryId });
 
-  // Filtrar productos por rango de precio
-  const filteredProducts = products.filter((product: Product) => {
+  // Filtrar productos por rango de precio antes de paginar
+  const filteredProducts = allProducts.filter(product => {
     const range = priceRanges[Number(priceRange)];
     return product.price >= range.min && product.price <= range.max;
   });
 
+  // Paginación manual
+  const currentPage = Number(page) || 1;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const end = start + PAGE_SIZE;
+  const paginatedProducts = filteredProducts.slice(start, end);
+  const pagination = {
+    page: currentPage,
+    pageSize: PAGE_SIZE,
+    pageCount: Math.ceil(filteredProducts.length / PAGE_SIZE),
+    total: filteredProducts.length,
+  };
+
   return (
-    <main className="min-h-screen bg-[#fafafa] dark:bg-[#0a0a0a]">
+    <main className="min-h-screen">
       <div className="max-w-7xl mx-auto px-6 py-24">
         {/* Botón minimalista */}
         <div className="flex justify-center mb-20">
@@ -80,7 +87,7 @@ export default async function CategoryPage({
         </div>
 
         {/* Grid de productos */}
-        {filteredProducts.length === 0 ? (
+        {paginatedProducts.length === 0 ? (
           <div className="text-center py-32">
             <h2 className="text-xl font-light tracking-wide text-neutral-500 dark:text-neutral-400 mb-3">
               No hay productos disponibles en este rango de precio
@@ -91,8 +98,15 @@ export default async function CategoryPage({
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
-            {filteredProducts.map((product: Product) => (
-              <ProductCard key={product.slug} product={product} />
+            {paginatedProducts.map((product, idx) => (
+              <ProductCard
+                key={product.slug}
+                product={{
+                  ...product,
+                  id: idx,
+                  image: product.images[0],
+                }}
+              />
             ))}
           </div>
         )}

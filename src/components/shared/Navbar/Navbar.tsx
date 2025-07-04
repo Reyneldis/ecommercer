@@ -39,7 +39,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-4 left-1/2 z-50 -translate-x-1/2 w-[95vw] max-w-4xl mx-auto rounded-full bg-background/90 shadow-xl border border-border/40 px-6 py-2 flex items-center justify-between backdrop-blur-lg">
+      <nav className="fixed top-4 left-1/2 z-50 -translate-x-1/2 w-[95vw] max-w-4xl mx-auto rounded-full bg-background/50 shadow-xl border border-border/40 px-6 py-2 flex items-center justify-between backdrop-blur-lg">
         {/* Logo y navegación principal */}
         <div className="flex items-center gap-8">
           <Logo />
@@ -141,7 +141,7 @@ export default function Navbar() {
 
       {/* Menú móvil flotante */}
       {isMenuOpen && (
-        <div className="fixed top-20 left-1/2 z-40 -translate-x-1/2 w-[90vw] max-w-2xl mx-auto rounded-2xl bg-background/95 shadow-2xl border border-border/40 px-6 py-6 backdrop-blur-xl">
+        <div className="fixed top-20 left-1/2 z-40 -translate-x-1/2 w-[90vw] max-w-2xl mx-auto rounded-2xl bg-background/50 shadow-2xl border border-border/40 px-6 py-6 backdrop-blur-xl">
           <div className="flex flex-col gap-4">
             <Link
               href="/"
