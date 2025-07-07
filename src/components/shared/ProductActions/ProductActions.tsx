@@ -35,9 +35,38 @@ export function ProductActions({
     );
   }
 
+  if (!product) {
+    return (
+      <div className="flex flex-col gap-6 mt-6">
+        <div className="text-center text-red-500 font-semibold">
+          Error: Producto no disponible.
+        </div>
+        <button
+          onClick={() => router.back()}
+          className="group text-base text-neutral-400 dark:text-neutral-500 font-medium px-0 py-2 bg-transparent transition-all relative focus:outline-none hover:text-primary"
+        >
+          Volver
+          <span className="block mx-auto mt-0.5 h-0.5 w-0 group-hover:w-2/3 bg-primary rounded-full transition-all duration-300"></span>
+        </button>
+      </div>
+    );
+  }
+
+  // Adaptar el producto para el botón de carrito
+  const cartProduct = {
+    id: Number(product.id),
+    productName: product.productName,
+    price: product.price,
+    image:
+      product.images && product.images.length > 0
+        ? product.images[0].url
+        : '/img/placeholder-product.jpg',
+    slug: product.slug,
+  };
+
   return (
     <div className="flex flex-col gap-6 mt-6">
-      <AddToCartButton product={product!} />
+      <AddToCartButton product={cartProduct} />
       {isSignedIn ? (
         <button
           onClick={handleBuyNow}

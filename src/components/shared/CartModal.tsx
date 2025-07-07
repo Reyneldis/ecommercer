@@ -157,13 +157,13 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
                 <Link
                   href="/checkout"
                   onClick={onClose}
-                  className="flex-1 px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors text-center"
+                  className="flex-1 px-4 py-2 text-sm bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-md transition-all duration-300 hover:scale-105 text-center font-semibold"
                 >
-                  Comprar
+                  Finalizar Compra
                 </Link>
               ) : (
                 <SignInButton mode="modal">
-                  <button className="flex-1 px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors text-center">
+                  <button className="flex-1 px-4 py-2 text-sm bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-md transition-all duration-300 hover:scale-105 text-center font-semibold">
                     Inicia sesión para comprar
                   </button>
                 </SignInButton>

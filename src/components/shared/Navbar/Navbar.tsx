@@ -1,6 +1,14 @@
 'use client';
 
-import { ShoppingCart, Menu, X } from 'lucide-react';
+import {
+  ShoppingCart,
+  Menu,
+  X,
+  User,
+  Shield,
+  Package,
+  CreditCard,
+} from 'lucide-react';
 import Logo from '../Logo/Logo';
 import { ModeToggle } from '../model-dark';
 import { useCart } from '@/hooks/use-cart';
@@ -11,29 +19,23 @@ import { usePathname } from 'next/navigation';
 import CartModal from '../CartModal';
 // Clerk imports
 import { UserButton, SignInButton, useAuth } from '@clerk/nextjs';
+import { useAdmin } from '@/hooks/use-admin';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  // const [searchQuery, setSearchQuery] = useState('');
+
   const { items } = useCart();
   const pathname = usePathname();
-  // const router = useRouter();
-  const { isSignedIn } = useAuth();
+
+  const { isSignedIn, isLoaded } = useAuth();
+  const { isAdmin } = useAdmin();
 
   const totalItems = items.length;
 
   const handleCartClick = () => {
     setIsCartOpen(true);
   };
-
-  // const handleSearch = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (searchQuery.trim()) {
-  //     router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
-  //     setSearchQuery('');
-  //   }
-  // };
 
   const isActive = (path: string) => pathname === path;
 
@@ -83,18 +85,52 @@ export default function Navbar() {
           </button>
 
           {/* Usuario con Clerk */}
-          <div className="hidden md:flex items-center">
-            {isSignedIn ? (
-              <UserButton
-                afterSignOutUrl="/"
-                appearance={{
-                  elements: {
-                    avatarBox:
-                      'ring-2 ring-primary transition-all duration-300 hover:scale-110',
-                  },
-                }}
-              />
-            ) : (
+          <div className="hidden md:flex items-center gap-2">
+            {isLoaded && isSignedIn ? (
+              <>
+                <Link
+                  href="/account"
+                  className="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors shadow-sm"
+                  title="Mi cuenta"
+                >
+                  <User className="h-5 w-5" />
+                </Link>
+                {isAdmin && (
+                  <>
+                    <Link
+                      href="/admin"
+                      className="p-2 rounded-full bg-orange-500/10 text-orange-500 hover:bg-orange-500 hover:text-white transition-colors shadow-sm"
+                      title="Panel de Administración"
+                    >
+                      <Shield className="h-5 w-5" />
+                    </Link>
+                    <Link
+                      href="/admin/products"
+                      className="p-2 rounded-full bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors shadow-sm"
+                      title="Gestión de Productos"
+                    >
+                      <Package className="h-5 w-5" />
+                    </Link>
+                    <Link
+                      href="/admin/payments"
+                      className="p-2 rounded-full bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white transition-colors shadow-sm"
+                      title="Dashboard de Pagos"
+                    >
+                      <CreditCard className="h-5 w-5" />
+                    </Link>
+                  </>
+                )}
+                <UserButton
+                  afterSignOutUrl="/"
+                  appearance={{
+                    elements: {
+                      avatarBox:
+                        'ring-2 ring-primary transition-all duration-300 hover:scale-110',
+                    },
+                  }}
+                />
+              </>
+            ) : isLoaded ? (
               <SignInButton mode="modal">
                 <button
                   className="p-2 rounded-full border border-primary/30 bg-background hover:bg-primary/10 transition-all duration-300 shadow-sm text-muted-foreground hover:text-primary flex items-center justify-center"
@@ -117,7 +153,7 @@ export default function Navbar() {
                   </svg>
                 </button>
               </SignInButton>
-            )}
+            ) : null}
           </div>
 
           {/* Tema */}
@@ -166,18 +202,56 @@ export default function Navbar() {
               Sobre nosotros
             </Link>
             {/* Usuario móvil con Clerk */}
-            <div className="flex items-center">
-              {isSignedIn ? (
-                <UserButton
-                  afterSignOutUrl="/"
-                  appearance={{
-                    elements: {
-                      avatarBox:
-                        'ring-2 ring-primary transition-all duration-300 hover:scale-110',
-                    },
-                  }}
-                />
-              ) : (
+            <div className="flex items-center gap-2">
+              {isLoaded && isSignedIn ? (
+                <>
+                  <Link
+                    href="/account"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <User className="h-4 w-4" />
+                    Mi cuenta
+                  </Link>
+                  {isAdmin && (
+                    <>
+                      <Link
+                        href="/admin"
+                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 text-orange-500 hover:bg-orange-500 hover:text-white transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <Shield className="h-4 w-4" />
+                        Admin
+                      </Link>
+                      <Link
+                        href="/admin/products"
+                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <Package className="h-4 w-4" />
+                        Productos
+                      </Link>
+                      <Link
+                        href="/admin/payments"
+                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <CreditCard className="h-4 w-4" />
+                        Pagos
+                      </Link>
+                    </>
+                  )}
+                  <UserButton
+                    afterSignOutUrl="/"
+                    appearance={{
+                      elements: {
+                        avatarBox:
+                          'ring-2 ring-primary transition-all duration-300 hover:scale-110',
+                      },
+                    }}
+                  />
+                </>
+              ) : isLoaded ? (
                 <SignInButton mode="modal">
                   <button
                     className="p-2 rounded-full border border-primary/30 bg-background hover:bg-primary/10 transition-all duration-300 shadow-sm text-muted-foreground hover:text-primary flex items-center justify-center"
@@ -200,7 +274,7 @@ export default function Navbar() {
                     </svg>
                   </button>
                 </SignInButton>
-              )}
+              ) : null}
             </div>
             <div className="flex items-center gap-4 mt-4">
               <button

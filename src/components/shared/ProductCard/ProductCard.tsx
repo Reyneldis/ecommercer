@@ -17,8 +17,23 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const handleAddToCart = () => {
     if (!isSignedIn) return;
-    addItem(product);
+    // Mapear el producto de la API a la estructura que espera el carrito
+    const cartItem = {
+      id: Number(product.id) || product.slug.length, // fallback simple si no es número
+      productName: product.productName,
+      price: product.price,
+      image: imageUrl,
+      slug: product.slug,
+    };
+    addItem(cartItem);
   };
+
+  // Obtener la imagen principal o un placeholder
+  const mainImage =
+    product.images && product.images.length > 0
+      ? product.images.find(img => img.isPrimary) || product.images[0]
+      : null;
+  const imageUrl = mainImage?.url || '/img/placeholder-category.jpg';
 
   return (
     <div className="group relative bg-background/20 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl border border-border/20 transition-all duration-500 hover:scale-[1.025] flex flex-col h-[420px] min-h-[420px]">
@@ -37,7 +52,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           className="block w-full h-full"
         >
           <Image
-            src={product.image}
+            src={imageUrl}
             alt={product.productName}
             width={400}
             height={273}
@@ -68,7 +83,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Categoría y descripción */}
         <div className="flex items-center gap-2 justify-center">
           <span className="text-xs font-medium text-muted-foreground/80">
-            {product.category}
+            {product.category?.categoryName || 'Sin categoría'}
           </span>
           <span className="text-xs text-muted-foreground/40">•</span>
           <span className="text-xs text-muted-foreground/80 line-clamp-1">

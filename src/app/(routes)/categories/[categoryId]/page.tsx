@@ -1,5 +1,4 @@
 import Pagination from '@/components/shared/Pagination';
-import { getProduct } from '@/lib/get-product';
 import Link from 'next/link';
 import React from 'react';
 import ProductCard from '@/components/shared/ProductCard/ProductCard';
@@ -14,46 +13,49 @@ const priceRanges = [
   { label: 'Más de $200', min: 200, max: Infinity },
 ];
 
+async function fetchProductsSSR({ categorySlug, page, priceRangeIdx }) {
+  const params = new URLSearchParams();
+  params.set('category', categorySlug);
+  params.set('page', page);
+  params.set('limit', PAGE_SIZE.toString());
+  // Usar URL absoluta para SSR
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const res = await fetch(`${baseUrl}/api/products?${params.toString()}`, {
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error('Error al cargar productos');
+  const data = await res.json();
+  return data;
+}
+
 export default async function CategoryPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ categoryId: string }>;
-  searchParams?:
-    | Promise<{ [key: string]: string | string[] | undefined }>
-    | undefined;
+  params: { categoryId: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  const { categoryId } = await params;
-  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const categoryId = params.categoryId;
+  const page = Array.isArray(searchParams?.page)
+    ? searchParams?.page[0]
+    : searchParams?.page ?? '1';
+  const priceRange = Array.isArray(searchParams?.priceRange)
+    ? searchParams?.priceRange[0]
+    : searchParams?.priceRange ?? '0';
+  const priceRangeIdx = Number(priceRange);
 
-  // Maneja que page y priceRange puedan ser arrays
-  const page = Array.isArray(resolvedSearchParams.page)
-    ? resolvedSearchParams.page[0]
-    : resolvedSearchParams.page ?? '1';
-
-  const priceRange = Array.isArray(resolvedSearchParams.priceRange)
-    ? resolvedSearchParams.priceRange[0]
-    : resolvedSearchParams.priceRange ?? '0';
-
-  const { products: allProducts } = await getProduct({ categoryId });
-
-  // Filtrar productos por rango de precio antes de paginar
-  const filteredProducts = allProducts.filter(product => {
-    const range = priceRanges[Number(priceRange)];
-    return product.price >= range.min && product.price <= range.max;
+  // Fetch productos de la API real
+  const { products = [], pagination } = await fetchProductsSSR({
+    categorySlug: categoryId,
+    page,
+    priceRangeIdx,
   });
 
-  // Paginación manual
-  const currentPage = Number(page) || 1;
-  const start = (currentPage - 1) * PAGE_SIZE;
-  const end = start + PAGE_SIZE;
-  const paginatedProducts = filteredProducts.slice(start, end);
-  const pagination = {
-    page: currentPage,
-    pageSize: PAGE_SIZE,
-    pageCount: Math.ceil(filteredProducts.length / PAGE_SIZE),
-    total: filteredProducts.length,
-  };
+  // Filtrar por rango de precio en el frontend
+  const filteredProducts = products.filter(product => {
+    const range = priceRanges[priceRangeIdx];
+    return product.price >= range.min && product.price <= range.max;
+  });
 
   return (
     <main className="min-h-screen">
@@ -76,7 +78,7 @@ export default async function CategoryPage({
               key={range.label}
               href={`?page=1&priceRange=${index}`}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                Number(priceRange) === index
+                priceRangeIdx === index
                   ? 'bg-primary text-primary-foreground shadow-lg'
                   : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
               }`}
@@ -87,7 +89,7 @@ export default async function CategoryPage({
         </div>
 
         {/* Grid de productos */}
-        {paginatedProducts.length === 0 ? (
+        {filteredProducts.length === 0 ? (
           <div className="text-center py-32">
             <h2 className="text-xl font-light tracking-wide text-neutral-500 dark:text-neutral-400 mb-3">
               No hay productos disponibles en este rango de precio
@@ -98,26 +100,19 @@ export default async function CategoryPage({
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
-            {paginatedProducts.map((product, idx) => (
-              <ProductCard
-                key={product.slug}
-                product={{
-                  ...product,
-                  id: idx,
-                  image: product.images[0],
-                }}
-              />
+            {filteredProducts.map(product => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}
 
         {/* Paginación */}
-        {filteredProducts.length > 0 && (
+        {pagination && filteredProducts.length > 0 && (
           <div className="mt-12">
             <Pagination
               page={pagination.page}
-              pageSize={pagination.pageSize}
-              pageCount={pagination.pageCount}
+              pageSize={pagination.limit}
+              pageCount={pagination.pages}
               total={pagination.total}
             />
           </div>

@@ -14,6 +14,10 @@ const nextConfig = {
         pathname: '/uploads/**',
       },
     ],
+    domains: [
+      'images.unsplash.com',
+      // agrega aquí otros dominios si usas más
+    ],
   },
   experimental: {
     serverActions: {

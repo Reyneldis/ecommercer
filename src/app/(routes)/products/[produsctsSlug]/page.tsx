@@ -1,5 +1,4 @@
 'use client';
-import { getProduct } from '@/lib/get-product';
 import { ProductActions } from '@/components/shared/ProductActions/ProductActions';
 import Image from 'next/image';
 import {
@@ -11,22 +10,27 @@ import {
 } from '@/components/ui/carousel';
 import React, { useState, useEffect } from 'react';
 import type { CarouselApi } from '@/components/ui/carousel';
-import type { ProductFull } from '@/types/product';
+import type { Product } from '@/types';
 
 interface ProductPageProps {
   params: Promise<{ produsctsSlug: string }>;
 }
 
 export default function ProductPage({ params }: ProductPageProps) {
-  const [product, setProduct] = useState<ProductFull | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [emblaApi, setEmblaApi] = useState<CarouselApi | undefined>(undefined);
 
   useEffect(() => {
     async function fetchProduct() {
       const { produsctsSlug } = await params;
-      const { products } = await getProduct({ productId: produsctsSlug });
-      setProduct(products?.[0]);
+      const res = await fetch(`/api/products/${produsctsSlug}`);
+      if (res.ok) {
+        const data = await res.json();
+        setProduct(data);
+      } else {
+        setProduct(null);
+      }
     }
     fetchProduct();
   }, [params]);
@@ -45,12 +49,6 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   if (!product) return null;
 
-  const productData = {
-    ...product,
-    id: 1,
-    image: '/img/aseo.webp',
-  };
-
   return (
     <div className="min-h-screen flex justify-center items-center">
       <main className="min-h-screenflex items-center justify-center py-16">
@@ -60,11 +58,11 @@ export default function ProductPage({ params }: ProductPageProps) {
             <div className="w-full max-w-md bg-white/70 dark:bg-neutral-900/70 backdrop-blur-md rounded-3xl shadow-2xl p-4 relative">
               <Carousel className="w-full" setApi={setEmblaApi}>
                 <CarouselContent>
-                  {product.images.map((img: string, idx: number) => (
+                  {product.images.map((img, idx) => (
                     <CarouselItem key={idx}>
                       <div className="relative group transition-transform duration-500">
                         <Image
-                          src={img}
+                          src={img.url}
                           alt={`${product.productName} ${idx + 1}`}
                           width={400}
                           height={300}
@@ -90,7 +88,7 @@ export default function ProductPage({ params }: ProductPageProps) {
               </Carousel>
               {/* Dots de navegación dinámicos */}
               <div className="flex justify-center mt-4 gap-2">
-                {product.images.map((_: string, idx: number) => (
+                {product.images.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => emblaApi && emblaApi.scrollTo(idx)}
@@ -117,7 +115,7 @@ export default function ProductPage({ params }: ProductPageProps) {
               {/* Características */}
               {product.features && product.features.length > 0 && (
                 <ul className="mb-4 list-disc list-inside text-neutral-700 dark:text-neutral-200">
-                  {product.features.map((feature: string, idx: number) => (
+                  {product.features.map((feature, idx) => (
                     <li key={idx}>{feature}</li>
                   ))}
                 </ul>
@@ -129,23 +127,18 @@ export default function ProductPage({ params }: ProductPageProps) {
                     Opciones disponibles:
                   </span>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {product.variants.map(
-                      (
-                        variant: Record<string, string | number>,
-                        idx: number,
-                      ) => (
-                        <span
-                          key={idx}
-                          className="px-3 py-1 rounded-full border bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 text-sm shadow-sm"
-                        >
-                          {variant.color ? `Color: ${variant.color}` : ''}
-                          {variant.size ? `Tamaño: ${variant.size}` : ''}
-                          {variant.stock !== undefined
-                            ? ` (${variant.stock} disponibles)`
-                            : ''}
-                        </span>
-                      ),
-                    )}
+                    {product.variants.map((variant, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 rounded-full border bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 text-sm shadow-sm"
+                      >
+                        {variant.name ? `Variante: ${variant.name}` : ''}
+                        {variant.price ? ` $${variant.price}` : ''}
+                        {variant.stock !== undefined
+                          ? ` (${variant.stock} disponibles)`
+                          : ''}
+                      </span>
+                    ))}
                   </div>
                 </div>
               )}
@@ -153,7 +146,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 ${product.price}
               </p>
             </div>
-            <ProductActions product={productData} />
+            <ProductActions product={product} />
           </div>
         </div>
       </main>

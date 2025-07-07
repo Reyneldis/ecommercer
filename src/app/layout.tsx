@@ -9,6 +9,7 @@ import Footer from '@/components/shared/footer/Footer';
 import { ThemeProvider } from 'next-themes';
 import { ClerkProvider } from '@clerk/nextjs';
 import AnimatedBackground from '@/components/shared/AnimatedBackground';
+import { ClientProviders } from '@/components/ClientProviders';
 
 const onest = Onest({
   subsets: ['latin'],
@@ -181,36 +182,38 @@ export default function RootLayout({
         <body
           className={`${onest.className} min-h-screen relative bg-transparent antialiased`}
         >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <AnimatedBackground />
-            <NextTopLoader
-              color="#2563eb"
-              initialPosition={0.08}
-              crawlSpeed={200}
-              height={3}
-              crawl={true}
-              showSpinner={false}
-              easing="ease"
-              speed={200}
-              shadow="0 0 10px #2563eb,0 0 5px #2563eb"
-            />
-            <Navbar />
-            <main className="relative z-10 min-h-screen bg-transparent">
-              {children}
-            </main>
-            <Toaster
-              position="bottom-right"
-              richColors
-              closeButton
-              duration={4000}
-            />
-            <Footer />
-          </ThemeProvider>
+          <ClientProviders>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <AnimatedBackground />
+              <NextTopLoader
+                color="#2563eb"
+                initialPosition={0.08}
+                crawlSpeed={200}
+                height={3}
+                crawl={true}
+                showSpinner={false}
+                easing="ease"
+                speed={200}
+                shadow="0 0 10px #2563eb,0 0 5px #2563eb"
+              />
+              <Navbar />
+              <main className="relative z-10 min-h-screen bg-transparent">
+                {children}
+              </main>
+              <Toaster
+                position="bottom-right"
+                richColors
+                closeButton
+                duration={4000}
+              />
+              <Footer />
+            </ThemeProvider>
+          </ClientProviders>
         </body>
       </html>
     </ClerkProvider>

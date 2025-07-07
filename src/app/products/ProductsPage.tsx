@@ -4,25 +4,30 @@ import { useSearchParams } from 'next/navigation';
 import ProductCard from '@/components/shared/ProductCard/ProductCard';
 import Categories from '@/components/shared/categories';
 import { Skeleton } from '@/components/ui/skeleton';
-import { products as productsData } from '@/lib/data';
+import { useProducts } from '@/hooks/use-products';
+import { useCategories } from '@/hooks/use-categories';
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
   const category = searchParams.get('category');
-  const search = searchParams.get('search');
 
-  const products = productsData;
-  const loading = false;
+  const {
+    products,
+    loading: productsLoading,
+    error: productsError,
+  } = useProducts();
+  const { loading: categoriesLoading, error: categoriesError } =
+    useCategories();
 
   const filteredProducts = products.filter(product => {
     const matchesCategory =
-      !category || category === 'todos' || product.category === category;
-    const matchesSearch =
-      !search ||
-      product.productName.toLowerCase().includes(search.toLowerCase()) ||
-      product.description.toLowerCase().includes(search.toLowerCase());
-    return matchesCategory && matchesSearch;
+      !category ||
+      category === 'todos' ||
+      product.category.categoryName === category;
+    return matchesCategory;
   });
+
+  const loading = productsLoading || categoriesLoading;
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -75,6 +80,20 @@ export default function ProductsPage() {
             <Categories />
           </div>
 
+          {/* Mensaje de error */}
+          {(productsError || categoriesError) && (
+            <div className="text-center py-16 bg-white dark:bg-neutral-900 rounded-2xl shadow-sm">
+              <h3 className="text-lg font-medium text-red-600 dark:text-red-400">
+                Error al cargar los datos
+              </h3>
+              <p className="text-base text-neutral-600 dark:text-neutral-400 mt-2">
+                {productsError ||
+                  categoriesError ||
+                  'Ha ocurrido un error inesperado'}
+              </p>
+            </div>
+          )}
+
           {/* Grid de productos */}
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -89,15 +108,8 @@ export default function ProductsPage() {
             <>
               {filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filteredProducts.map((product, idx) => (
-                    <ProductCard
-                      key={product.slug}
-                      product={{
-                        ...product,
-                        id: idx,
-                        image: product.images[0],
-                      }}
-                    />
+                  {filteredProducts.map(product => (
+                    <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
               ) : (
@@ -106,9 +118,7 @@ export default function ProductsPage() {
                     No se encontraron productos
                   </h3>
                   <p className="text-base text-neutral-600 dark:text-neutral-400 mt-2">
-                    {search
-                      ? `No hay resultados para "${search}"`
-                      : 'Intenta con otra categoría o vuelve más tarde'}
+                    {'Intenta con otra categoría o vuelve más tarde'}
                   </p>
                 </div>
               )}
