@@ -7,6 +7,7 @@ export interface ProducType {
   slug: string;
   category: string;
   stock: number;
+  status?: 'active' | 'inactive';
 }
 
 export interface ProductFull {
@@ -18,4 +19,5 @@ export interface ProductFull {
   category: string;
   features?: string[];
   variants?: Array<Record<string, string | number>>;
+  status?: 'active' | 'inactive';
 }

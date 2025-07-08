@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireRole } from '@/lib/auth-guard';
+import { productSchema } from '@/schemas/productSchema';
 
 // GET /api/products - Obtener productos con filtros
 export async function GET(request: NextRequest) {
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     // Construir filtros
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (category) {
       where.category = {
@@ -76,6 +77,14 @@ export async function POST(request: NextRequest) {
   try {
     await requireRole(['ADMIN']);
     const body = await request.json();
+    // Validar con Zod
+    const result = productSchema.safeParse(body);
+    if (!result.success) {
+      return NextResponse.json(
+        { error: 'Datos inválidos', details: result.error.flatten() },
+        { status: 400 },
+      );
+    }
     const {
       slug,
       productName,
@@ -85,49 +94,38 @@ export async function POST(request: NextRequest) {
       features,
       variants,
       images,
-    } = body;
-
-    // Validaciones básicas
-    if (!slug || !productName || !price || !categoryId) {
-      return NextResponse.json(
-        { error: 'Slug, nombre, precio y categoría son requeridos' },
-        { status: 400 },
-      );
-    }
-
+      status,
+    } = result.data;
     // Verificar si el slug ya existe
     const existingProduct = await prisma.product.findUnique({
       where: { slug },
     });
-
     if (existingProduct) {
       return NextResponse.json(
         { error: 'Ya existe un producto con este slug' },
         { status: 400 },
       );
     }
-
     // Verificar si la categoría existe
     const category = await prisma.category.findUnique({
       where: { id: categoryId },
     });
-
     if (!category) {
       return NextResponse.json(
         { error: 'La categoría especificada no existe' },
         { status: 400 },
       );
     }
-
     // Crear el producto con sus variantes e imágenes
     const product = await prisma.product.create({
       data: {
         slug,
         productName,
-        price: parseFloat(price),
+        price,
         description,
         categoryId,
         features,
+        status,
         variants: {
           create: variants || [],
         },
@@ -141,7 +139,6 @@ export async function POST(request: NextRequest) {
         variants: true,
       },
     });
-
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
     console.error('Error creating product:', error);

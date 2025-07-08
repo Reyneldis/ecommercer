@@ -182,7 +182,7 @@ export default function AdminPaymentsPage() {
                     Ingresos Totales
                   </p>
                   <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                    ${totalRevenue.toFixed(2)}
+                    ${Number(totalRevenue).toFixed(2)}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
@@ -218,7 +218,7 @@ export default function AdminPaymentsPage() {
                     Pendientes
                   </p>
                   <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
-                    ${pendingAmount.toFixed(2)}
+                    ${Number(pendingAmount).toFixed(2)}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center">
@@ -236,7 +236,7 @@ export default function AdminPaymentsPage() {
                     Fallidos
                   </p>
                   <p className="text-3xl font-bold text-red-600 dark:text-red-400">
-                    ${failedAmount.toFixed(2)}
+                    ${Number(failedAmount).toFixed(2)}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center">
@@ -331,7 +331,7 @@ export default function AdminPaymentsPage() {
                         <div className="flex items-center gap-4 mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                           <span className="flex items-center gap-1">
                             <DollarSign className="h-4 w-4" />$
-                            {transaction.amount.toFixed(2)}
+                            {Number(transaction.amount).toFixed(2)}
                           </span>
                           <span className="flex items-center gap-1">
                             •••• {transaction.last4}
@@ -419,7 +419,7 @@ export default function AdminPaymentsPage() {
                     Monto
                   </label>
                   <p className="text-3xl font-bold text-green-600 dark:text-green-400 bg-white dark:bg-green-900/30 px-4 py-3 rounded-xl">
-                    ${selectedTransaction.amount.toFixed(2)}
+                    ${Number(selectedTransaction.amount).toFixed(2)}
                   </p>
                 </div>
                 <div>

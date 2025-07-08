@@ -1,20 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { syncUserSchema } from '@/schemas/syncUserSchema';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { clerkId, email, firstName, lastName, avatar } = body;
-    if (!clerkId || !email) {
+    // Validar con Zod
+    const result = syncUserSchema.safeParse(body);
+    if (!result.success) {
       return NextResponse.json(
-        { error: 'Datos insuficientes' },
+        { error: 'Datos inválidos', details: result.error.flatten() },
         { status: 400 },
       );
     }
-
+    const { clerkId, email, firstName, lastName, avatar } = result.data;
     // Buscar usuario por clerkId
     let user = await prisma.user.findUnique({ where: { clerkId } });
-
     // Si no existe, crearlo
     if (!user) {
       user = await prisma.user.create({
@@ -28,10 +29,8 @@ export async function POST(request: NextRequest) {
         },
       });
     }
-
     // (Opcional) Actualizar datos si han cambiado
     // Puedes agregar lógica aquí si quieres mantener los datos sincronizados
-
     return NextResponse.json(user);
   } catch (error) {
     console.error('Error en sync-user:', error);

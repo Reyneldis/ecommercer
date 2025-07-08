@@ -52,7 +52,7 @@ export default function CheckoutPage() {
   });
 
   const subtotal = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + Number(item.price) * Number(item.quantity),
     0,
   );
   const shipping = 9.99;
@@ -371,7 +371,9 @@ export default function CheckoutPage() {
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-neutral-900 dark:text-neutral-100">
-                          ${(item.price * item.quantity).toFixed(2)}
+                          $
+                          {Number(item.price) *
+                            Number(item.quantity).toFixed(2)}
                         </p>
                       </div>
                     </div>
@@ -387,7 +389,7 @@ export default function CheckoutPage() {
                       Subtotal
                     </span>
                     <span className="font-semibold">
-                      ${subtotal.toFixed(2)}
+                      ${Number(subtotal).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -395,20 +397,22 @@ export default function CheckoutPage() {
                       Envío
                     </span>
                     <span className="font-semibold">
-                      ${shipping.toFixed(2)}
+                      ${Number(shipping).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-neutral-600 dark:text-neutral-400">
                       Impuestos
                     </span>
-                    <span className="font-semibold">${tax.toFixed(2)}</span>
+                    <span className="font-semibold">
+                      ${Number(tax).toFixed(2)}
+                    </span>
                   </div>
                   <Separator className="my-2" />
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
                     <span className="text-emerald-600 dark:text-emerald-400">
-                      ${total.toFixed(2)}
+                      ${Number(total).toFixed(2)}
                     </span>
                   </div>
                 </div>

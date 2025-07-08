@@ -2,6 +2,7 @@ import Pagination from '@/components/shared/Pagination';
 import Link from 'next/link';
 import React from 'react';
 import ProductCard from '@/components/shared/ProductCard/ProductCard';
+import { Product } from '@/types';
 
 const PAGE_SIZE = 3;
 
@@ -13,7 +14,13 @@ const priceRanges = [
   { label: 'Más de $200', min: 200, max: Infinity },
 ];
 
-async function fetchProductsSSR({ categorySlug, page, priceRangeIdx }) {
+async function fetchProductsSSR({
+  categorySlug,
+  page,
+}: {
+  categorySlug: string;
+  page: string;
+}) {
   const params = new URLSearchParams();
   params.set('category', categorySlug);
   params.set('page', page);
@@ -32,27 +39,28 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: {
-  params: { categoryId: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: Promise<{ categoryId: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const categoryId = params.categoryId;
-  const page = Array.isArray(searchParams?.page)
-    ? searchParams?.page[0]
-    : searchParams?.page ?? '1';
-  const priceRange = Array.isArray(searchParams?.priceRange)
-    ? searchParams?.priceRange[0]
-    : searchParams?.priceRange ?? '0';
+  const resolvedParams = await params;
+  const categoryId = resolvedParams.categoryId;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const page = Array.isArray(resolvedSearchParams?.page)
+    ? resolvedSearchParams?.page[0]
+    : resolvedSearchParams?.page ?? '1';
+  const priceRange = Array.isArray(resolvedSearchParams?.priceRange)
+    ? resolvedSearchParams?.priceRange[0]
+    : resolvedSearchParams?.priceRange ?? '0';
   const priceRangeIdx = Number(priceRange);
 
   // Fetch productos de la API real
   const { products = [], pagination } = await fetchProductsSSR({
     categorySlug: categoryId,
     page,
-    priceRangeIdx,
   });
 
   // Filtrar por rango de precio en el frontend
-  const filteredProducts = products.filter(product => {
+  const filteredProducts = products.filter((product: Product) => {
     const range = priceRanges[priceRangeIdx];
     return product.price >= range.min && product.price <= range.max;
   });
@@ -100,7 +108,7 @@ export default async function CategoryPage({
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
-            {filteredProducts.map(product => (
+            {filteredProducts.map((product: Product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

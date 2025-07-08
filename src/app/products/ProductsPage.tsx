@@ -19,13 +19,15 @@ export default function ProductsPage() {
   const { loading: categoriesLoading, error: categoriesError } =
     useCategories();
 
-  const filteredProducts = products.filter(product => {
-    const matchesCategory =
-      !category ||
-      category === 'todos' ||
-      product.category.categoryName === category;
-    return matchesCategory;
-  });
+  const filteredProducts = products
+    .filter(product => product.status === 'active')
+    .filter(product => {
+      const matchesCategory =
+        !category ||
+        category === 'todos' ||
+        product.category.categoryName === category;
+      return matchesCategory;
+    });
 
   const loading = productsLoading || categoriesLoading;
 

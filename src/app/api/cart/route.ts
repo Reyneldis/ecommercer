@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { cartItemSchema } from '@/schemas/cartSchema';
 
 // GET /api/cart - Obtener items del carrito de un usuario
 export async function GET(request: NextRequest) {
@@ -56,33 +57,30 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, productId, variantId, quantity = 1 } = body;
-
-    if (!userId || !productId) {
+    // Validar con Zod
+    const result = cartItemSchema.safeParse(body);
+    if (!result.success) {
       return NextResponse.json(
-        { error: 'Usuario y producto son requeridos' },
+        { error: 'Datos inválidos', details: result.error.flatten() },
         { status: 400 },
       );
     }
-
+    const { userId, productId, variantId, quantity } = result.data;
     // Verificar que el producto existe
     const product = await prisma.product.findUnique({
       where: { id: productId },
     });
-
     if (!product) {
       return NextResponse.json(
         { error: 'Producto no encontrado' },
         { status: 404 },
       );
     }
-
     // Si se especifica una variante, verificar que existe
     if (variantId) {
       const variant = await prisma.productVariant.findUnique({
         where: { id: variantId },
       });
-
       if (!variant) {
         return NextResponse.json(
           { error: 'Variante no encontrada' },
@@ -90,7 +88,6 @@ export async function POST(request: NextRequest) {
         );
       }
     }
-
     // Verificar si el item ya existe en el carrito
     const existingItem = await prisma.cartItem.findUnique({
       where: {
@@ -101,9 +98,7 @@ export async function POST(request: NextRequest) {
         },
       },
     });
-
     let cartItem;
-
     if (existingItem) {
       // Actualizar cantidad
       cartItem = await prisma.cartItem.update({
@@ -143,7 +138,6 @@ export async function POST(request: NextRequest) {
         },
       });
     }
-
     return NextResponse.json(cartItem, { status: 201 });
   } catch (error) {
     console.error('Error adding to cart:', error);

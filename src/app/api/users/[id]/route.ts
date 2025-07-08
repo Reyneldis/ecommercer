@@ -5,7 +5,7 @@ import { requireRole } from '@/lib/auth-guard';
 // GET /api/users/[id] - Detalles de usuario
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     await requireRole(['ADMIN']);
@@ -42,7 +42,7 @@ export async function GET(
 // PATCH /api/users/[id] - Editar usuario
 export async function PATCH(
   request: NextRequest,
-  context: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     await requireRole(['ADMIN']);
@@ -70,7 +70,7 @@ export async function PATCH(
 // DELETE /api/users/[id] - Eliminar usuario
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     await requireRole(['ADMIN']);

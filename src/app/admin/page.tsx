@@ -14,19 +14,66 @@ import {
   Bell,
   ArrowRight,
   DollarSign,
-  Star,
   Activity,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
+// Tipos para los datos del dashboard
+interface DashboardStats {
+  totalUsers: number;
+  totalOrders: number;
+  totalProducts: number;
+  revenue: number;
+}
+
+interface RecentOrder {
+  id: string;
+  user: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  } | null;
+  total: number;
+  status: string;
+  createdAt: string;
+}
+
+interface DashboardData {
+  stats: DashboardStats;
+  recentOrders: RecentOrder[];
+}
 
 export default function AdminPage() {
   const { user } = useUser();
   const { role, loading } = useUserRole();
-  const router = useRouter();
 
-  if (loading) {
+  // Estado para los datos del dashboard
+  const [dashboard, setDashboard] = useState<DashboardData | null>(null);
+  const [loadingDashboard, setLoadingDashboard] = useState(true);
+  const [errorDashboard, setErrorDashboard] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchDashboard() {
+      setLoadingDashboard(true);
+      setErrorDashboard(null);
+      try {
+        const res = await fetch('/api/admin/dashboard');
+        if (!res.ok) throw new Error('Error al obtener datos del dashboard');
+        const data: DashboardData = await res.json();
+        setDashboard(data);
+      } catch (err: unknown) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Error desconocido';
+        setErrorDashboard(errorMessage);
+      } finally {
+        setLoadingDashboard(false);
+      }
+    }
+    if (role === 'ADMIN') fetchDashboard();
+  }, [role]);
+
+  if (loading || loadingDashboard) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-950">
         <div className="text-center">
@@ -35,6 +82,14 @@ export default function AdminPage() {
             Cargando panel de administración...
           </p>
         </div>
+      </div>
+    );
+  }
+
+  if (errorDashboard) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <h2 className="text-2xl font-bold text-red-600">{errorDashboard}</h2>
       </div>
     );
   }
@@ -49,19 +104,14 @@ export default function AdminPage() {
     );
   }
 
-  // Datos de ejemplo para el dashboard
-  const stats = {
-    totalUsers: 156,
-    totalOrders: 89,
-    totalProducts: 24,
-    revenue: 15420,
+  // Usar datos reales si existen
+  const stats = dashboard?.stats || {
+    totalUsers: 0,
+    totalOrders: 0,
+    totalProducts: 0,
+    revenue: 0,
   };
-
-  const recentOrders = [
-    { id: '1', customer: 'Juan Pérez', amount: 120, status: 'pending' },
-    { id: '2', customer: 'María García', amount: 85, status: 'completed' },
-    { id: '3', customer: 'Carlos López', amount: 200, status: 'shipped' },
-  ];
+  const recentOrders = dashboard?.recentOrders || [];
 
   return (
     <div className="min-h-screen mt-18 bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-950">
@@ -168,7 +218,7 @@ export default function AdminPage() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold mb-2">
-                ${stats.revenue.toLocaleString()}
+                ${Number(stats.revenue || 0).toLocaleString()}
               </div>
               <p className="text-orange-100 text-sm flex items-center gap-1">
                 <TrendingUp className="h-4 w-4" />
@@ -240,7 +290,7 @@ export default function AdminPage() {
             </div>
             <CardContent className="p-4 sm:p-6">
               <div className="space-y-3 sm:space-y-4 overflow-x-auto">
-                {recentOrders.map(order => (
+                {recentOrders.map((order: RecentOrder) => (
                   <div
                     key={order.id}
                     className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-neutral-50 to-neutral-100 dark:from-neutral-800 dark:to-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:shadow-md transition-all duration-200 gap-2 sm:gap-0"
@@ -251,7 +301,9 @@ export default function AdminPage() {
                       </div>
                       <div>
                         <p className="font-semibold text-neutral-800 dark:text-neutral-200 text-sm sm:text-base">
-                          {order.customer}
+                          {order.user
+                            ? `${order.user.firstName} ${order.user.lastName}`
+                            : 'Cliente no registrado'}
                         </p>
                         <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
                           Pedido #{order.id}
@@ -260,20 +312,20 @@ export default function AdminPage() {
                     </div>
                     <div className="text-right">
                       <p className="font-bold text-base sm:text-lg text-neutral-800 dark:text-neutral-200">
-                        ${order.amount}
+                        ${Number(order.total).toLocaleString()}
                       </p>
                       <span
                         className={`text-xs px-2 sm:px-3 py-1 rounded-full font-medium ${
-                          order.status === 'completed'
+                          order.status === 'DELIVERED'
                             ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                            : order.status === 'shipped'
+                            : order.status === 'SHIPPED'
                             ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                             : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
                         }`}
                       >
-                        {order.status === 'completed'
-                          ? '✅ Completado'
-                          : order.status === 'shipped'
+                        {order.status === 'DELIVERED'
+                          ? '✅ Entregado'
+                          : order.status === 'SHIPPED'
                           ? '🚚 Enviado'
                           : '⏳ Pendiente'}
                       </span>

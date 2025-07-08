@@ -19,9 +19,19 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
-export default function TestNotificationsPage() {
+export default async function TestNotificationsPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ categoryId: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const { isAdmin, loading } = useAdmin();
   const router = useRouter();
+
+  const resolvedParams = await params;
+  const categoryId = resolvedParams.categoryId;
+  const resolvedSearchParams = await searchParams;
 
   // Redirigir si no es admin
   useEffect(() => {

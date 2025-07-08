@@ -423,7 +423,7 @@ export default function AdminOrdersPage() {
                           </span>
                           <span className="flex items-center gap-1">
                             <DollarSign className="h-4 w-4" />$
-                            {order.total.toFixed(2)}
+                            {Number(order.total).toFixed(2)}
                           </span>
                           <span className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
@@ -597,7 +597,7 @@ export default function AdminOrdersPage() {
                         Total del Pedido
                       </label>
                       <p className="text-3xl font-bold text-green-600 dark:text-green-400 bg-white dark:bg-green-900/30 px-4 py-3 rounded-xl">
-                        ${selectedOrder.total.toFixed(2)}
+                        ${Number(selectedOrder.total).toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -624,10 +624,13 @@ export default function AdminOrdersPage() {
                             </div>
                             <div className="text-right">
                               <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                                ${(item.price * item.quantity).toFixed(2)}
+                                $
+                                {(
+                                  Number(item.price) * Number(item.quantity)
+                                ).toFixed(2)}
                               </p>
                               <p className="text-sm text-green-500 dark:text-green-400">
-                                ${item.price.toFixed(2)} c/u
+                                ${Number(item.price).toFixed(2)} c/u
                               </p>
                             </div>
                           </div>

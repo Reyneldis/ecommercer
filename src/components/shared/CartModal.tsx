@@ -99,7 +99,7 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
                       {item.productName}
                     </h3>
                     <p className="text-sm font-medium text-primary">
-                      ${item.price.toFixed(2)}
+                      ${Number(item.price).toFixed(2)}
                     </p>
 
                     {/* Controles de cantidad */}
@@ -143,7 +143,7 @@ export default function CartModal({ isOpen, onClose }: CartModalProps) {
             <div className="flex justify-between items-center">
               <span className="font-medium">Total:</span>
               <span className="text-lg font-bold text-primary">
-                ${total.toFixed(2)}
+                ${Number(total).toFixed(2)}
               </span>
             </div>
             <div className="flex gap-2">

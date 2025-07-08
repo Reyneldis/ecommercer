@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireRole } from '@/lib/auth-guard';
+import { userSchema } from '@/schemas/userSchema';
 
 // GET /api/users - Obtener usuarios (solo admin)
 export async function GET(request: NextRequest) {
@@ -60,30 +61,27 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { clerkId, email, firstName, lastName, role, avatar } = body;
-
-    // Validaciones básicas
-    if (!clerkId || !email || !firstName || !lastName) {
+    // Validar con Zod
+    const result = userSchema.safeParse(body);
+    if (!result.success) {
       return NextResponse.json(
-        { error: 'Todos los campos son requeridos' },
+        { error: 'Datos inválidos', details: result.error.flatten() },
         { status: 400 },
       );
     }
-
+    const { clerkId, email, firstName, lastName, role, avatar } = result.data;
     // Verificar si el usuario ya existe
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [{ clerkId }, { email }],
       },
     });
-
     if (existingUser) {
       return NextResponse.json(
         { error: 'El usuario ya existe' },
         { status: 400 },
       );
     }
-
     const user = await prisma.user.create({
       data: {
         clerkId,
@@ -94,7 +92,6 @@ export async function POST(request: NextRequest) {
         avatar,
       },
     });
-
     return NextResponse.json(user, { status: 201 });
   } catch (error) {
     console.error('Error creating user:', error);

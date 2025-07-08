@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireRole } from '@/lib/auth-guard';
+import { categorySchema } from '@/schemas/categorySchema';
 
 // GET /api/categories - Obtener todas las categorías
 export async function GET() {
@@ -33,28 +34,25 @@ export async function POST(request: NextRequest) {
   try {
     await requireRole(['ADMIN']);
     const body = await request.json();
-    const { categoryName, slug, mainImage, description } = body;
-
-    // Validaciones básicas
-    if (!categoryName || !slug) {
+    // Validar con Zod
+    const result = categorySchema.safeParse(body);
+    if (!result.success) {
       return NextResponse.json(
-        { error: 'Nombre y slug son requeridos' },
+        { error: 'Datos inválidos', details: result.error.flatten() },
         { status: 400 },
       );
     }
-
+    const { categoryName, slug, mainImage, description } = result.data;
     // Verificar si el slug ya existe
     const existingCategory = await prisma.category.findUnique({
       where: { slug },
     });
-
     if (existingCategory) {
       return NextResponse.json(
         { error: 'Ya existe una categoría con este slug' },
         { status: 400 },
       );
     }
-
     const category = await prisma.category.create({
       data: {
         categoryName,
@@ -63,7 +61,6 @@ export async function POST(request: NextRequest) {
         description,
       },
     });
-
     return NextResponse.json(category, { status: 201 });
   } catch (error) {
     console.error('Error creating category:', error);

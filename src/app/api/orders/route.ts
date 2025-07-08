@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireRole } from '@/lib/auth-guard';
+import { orderSchema } from '@/schemas/orderSchema';
 
 // GET /api/orders - Obtener órdenes (admin ve todas, usuario ve las suyas)
 export async function GET(request: NextRequest) {
@@ -81,6 +82,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    // Validar con Zod
+    const result = orderSchema.safeParse(body);
+    if (!result.success) {
+      return NextResponse.json(
+        { error: 'Datos inválidos', details: result.error.flatten() },
+        { status: 400 },
+      );
+    }
     const {
       userId,
       customerEmail,
@@ -90,39 +99,21 @@ export async function POST(request: NextRequest) {
       taxAmount,
       shippingAmount,
       total,
-    } = body;
-
-    // Validaciones básicas
-    if (
-      !userId ||
-      !customerEmail ||
-      !customerName ||
-      !items ||
-      items.length === 0
-    ) {
-      return NextResponse.json(
-        { error: 'Datos de orden incompletos' },
-        { status: 400 },
-      );
-    }
-
+    } = result.data;
     // Verificar que el usuario existe
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
-
     if (!user) {
       return NextResponse.json(
         { error: 'Usuario no encontrado' },
         { status: 400 },
       );
     }
-
     // Generar número de orden único
     const orderNumber = `ORD-${Date.now()}-${Math.random()
       .toString(36)
       .substr(2, 9)}`;
-
     // Crear la orden
     const order = await prisma.order.create({
       data: {
@@ -131,21 +122,21 @@ export async function POST(request: NextRequest) {
         status: 'PENDING',
         customerEmail,
         customerName,
-        subtotal: parseFloat(subtotal),
-        taxAmount: parseFloat(taxAmount || '0'),
-        shippingAmount: parseFloat(shippingAmount || '0'),
-        total: parseFloat(total),
+        subtotal,
+        taxAmount: taxAmount ?? 0,
+        shippingAmount: shippingAmount ?? 0,
+        total,
         paymentStatus: 'PENDING',
         items: {
-          create: items.map((item: any) => ({
+          create: items.map(item => ({
             productId: item.productId,
             variantId: item.variantId,
             productName: item.productName,
             productSku: item.productSku,
             variantName: item.variantName,
-            price: parseFloat(item.price),
+            price: item.price,
             quantity: item.quantity,
-            total: parseFloat(item.total),
+            total: item.total,
           })),
         },
       },
@@ -174,7 +165,6 @@ export async function POST(request: NextRequest) {
         },
       },
     });
-
     return NextResponse.json(order, { status: 201 });
   } catch (error) {
     console.error('Error creating order:', error);
